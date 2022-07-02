@@ -87,9 +87,9 @@ public class InputController : MonoBehaviour
 
             targetValue = result;
         }
-        catch (FormatException)
+        catch
         {
-            
+            input.text = targetValue.ToString();
         }
     }
 
