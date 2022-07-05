@@ -3,13 +3,14 @@ using UnityEngine;
 
 using URandom = UnityEngine.Random;
 
-public class LetterGridController : MonoBehaviour, IGridController
+public class LetterGridController : MonoBehaviour
 {
     private LetterElementsPoolController elementsPoolController;
 
     private LetterGridElementView[] elements;
     private int[] order;
 
+    private GridGenerator gridGenerator;
     private GridProperties gridProperties;
 
     [SerializeField] private Transform gridParent;
@@ -25,7 +26,17 @@ public class LetterGridController : MonoBehaviour, IGridController
     public Action OnBusyStarted;
     public Action OnBusyFinished;
 
-    public void SetNewGrid(GridProperties gridProperties)
+    public void Init(GridGenerator gridGenerator)
+    {
+        this.gridGenerator = gridGenerator;
+    }
+
+    public void CreateNewGrid(int columns, int rows)
+    {
+        SetNewGrid(gridGenerator.GenerateNewGrid(rows, columns));
+    }
+
+    private void SetNewGrid(GridProperties gridProperties)
     {
         this.gridProperties = gridProperties;
 

@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GridGenerator : MonoBehaviour
 {
-    private IGridController gridView;
-
     private Vector2 gridRectSize;
     private Vector2 gridCenter;
     private Vector2 clampedGridArea;
@@ -20,12 +16,7 @@ public class GridGenerator : MonoBehaviour
         clampedGridArea = gridRectSize - borderOffset;
     }
 
-    public void SetGridController(IGridController gridController)
-    {
-        this.gridView = gridController;
-    }
-
-    public void GenerateNewGrid(int horizontalElementsNumber, int verticalElementsNumber)
+    public GridProperties GenerateNewGrid(int horizontalElementsNumber, int verticalElementsNumber)
     {
         if (horizontalElementsNumber < 0) horizontalElementsNumber = 1;
         if (verticalElementsNumber < 0) verticalElementsNumber = 1;
@@ -46,7 +37,7 @@ public class GridGenerator : MonoBehaviour
 
         GridProperties gridProperties = new GridProperties(gridRectSize, gridSize, startSpawnPosition, elementSize, spaceBetweenElements);
 
-        gridView.SetNewGrid(gridProperties);
+        return gridProperties;
     }
 
     private void OnValidate()

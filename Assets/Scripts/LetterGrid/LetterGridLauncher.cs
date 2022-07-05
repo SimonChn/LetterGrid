@@ -12,8 +12,9 @@ public class LetterGridLauncher : MonoBehaviour
     public void Launch()
     {
         gridGenerator.Init();
-        gridGenerator.SetGridController(gridController);
-        inputController.Init(gridGenerator, gridController);
+        gridController.Init(gridGenerator);
+
+        inputController.Init(gridController);
 
         Destroy(this);
     }

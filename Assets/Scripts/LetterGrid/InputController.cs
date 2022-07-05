@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 using UnityEngine.UI;
 using TMPro;
 
@@ -23,23 +22,19 @@ public class InputController : MonoBehaviour
     [Header("DummyError")]
     [SerializeField] private GameObject dummyError;
 
-    private GridGenerator gridGenerator;
-
-    public void Init(GridGenerator gridGenerator, LetterGridController gridController)
+    public void Init(LetterGridController gridController)
     {
-        this.gridGenerator = gridGenerator;
-
         currentColumns = startColumns;
         currentRows = startRows;
 
         columnsInput.text = startColumns.ToString();
-        columnsInput.onEndEdit.AddListener(delegate { CheckInput(columnsInput, ref currentColumns);});
+        columnsInput.onEndEdit.AddListener(delegate {ProceedInput(columnsInput, ref currentColumns);});
 
         rowsInput.text = startRows.ToString();
-        rowsInput.onEndEdit.AddListener(delegate { CheckInput(rowsInput, ref currentRows); });
+        rowsInput.onEndEdit.AddListener(delegate {ProceedInput(rowsInput, ref currentRows);});
 
         generateButton.onClick.AddListener(UnlockShuffles);
-        generateButton.onClick.AddListener(GeneretaNewGrid);
+        generateButton.onClick.AddListener(delegate {gridController.CreateNewGrid(currentColumns, currentRows);});
 
         shuffleButton.onClick.AddListener(gridController.ShuffleElements);
 
@@ -66,7 +61,7 @@ public class InputController : MonoBehaviour
         shuffleRowButton.interactable = true;
     }
 
-    private void CheckInput(TMP_InputField input, ref int targetValue)
+    private void ProceedInput(TMP_InputField input, ref int targetValue)
     {
         try
         {
@@ -96,11 +91,6 @@ public class InputController : MonoBehaviour
     private void DisplayInputError()
     {
         dummyError.SetActive(true);
-    }
-
-    private void GeneretaNewGrid()
-    {
-        gridGenerator.GenerateNewGrid(currentColumns, currentRows);
     }
 
     private void OnDisable()
