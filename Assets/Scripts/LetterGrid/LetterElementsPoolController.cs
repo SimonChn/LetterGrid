@@ -48,8 +48,6 @@ public class LetterElementsPoolController
     {
         var newElement = UnityEngine.Object.Instantiate(elementPrefab, parent, false);
         newElement.transform.localScale = scaledSize;
-
-        newElement.Init();
         newElement.gameObject.SetActive(false);
 
         return newElement;

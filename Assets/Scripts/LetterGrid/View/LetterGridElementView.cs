@@ -3,21 +3,27 @@ using UnityEngine;
 using TMPro;
 
 [RequireComponent(typeof(RectTransform))]
-public class LetterGridElementView : MonoBehaviour
+public class LetterGridElementView : MonoBehaviour, IGridElementView
 {
     private const int minCharIndex = 65;
     private const int maxCharIndex = 90;
 
     private RectTransform rectTransform;
 
-    public Vector2 Positon => rectTransform.anchoredPosition;
-
-    public void Init()
+    public Vector2 Position
     {
-        UpdateValue();
+        get
+        {
+            return rectTransform.anchoredPosition;
+        }
+
+        set
+        {
+            rectTransform.anchoredPosition = value;
+        }
     }
 
-    public void SetRectTransform(Vector2 size, Vector2 anchorMin, Vector2 anchorMax)
+    public void Setup(Vector2 size, Vector2 anchorMin, Vector2 anchorMax)
     {
         rectTransform.sizeDelta = size;
 
@@ -31,10 +37,5 @@ public class LetterGridElementView : MonoBehaviour
 
         rectTransform = GetComponent<RectTransform>();
         GetComponent<TextMeshProUGUI>().text = Convert.ToChar(charIndex).ToString();
-    }
-
-    public void SetAnchoredPosition(Vector2 newPosition)
-    {
-        rectTransform.anchoredPosition = newPosition;
     }
 }

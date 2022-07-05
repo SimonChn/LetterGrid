@@ -5,13 +5,16 @@ using URandom = UnityEngine.Random;
 
 public class LetterGridController : MonoBehaviour
 {
+    private GridGenerator gridGenerator;
+    private IGridElementViewMover elementsMover;
+
     private LetterElementsPoolController elementsPoolController;
 
+    private GridProperties gridProperties;
     private LetterGridElementView[] elements;
     private int[] order;
 
-    private GridGenerator gridGenerator;
-    private GridProperties gridProperties;
+    private bool isBusy = false;
 
     [SerializeField] private Transform gridParent;
 
@@ -20,15 +23,20 @@ public class LetterGridController : MonoBehaviour
     [SerializeField] private Transform poolParent;
     [SerializeField] private LetterGridElementView gridElementPrefab;
 
-    [Header("Animator")]
-    [SerializeField] private LetterGridMover animator;
-
     public Action OnBusyStarted;
     public Action OnBusyFinished;
 
-    public void Init(GridGenerator gridGenerator)
+    public void Init(GridGenerator gridGenerator, IGridElementViewMover elementsMover)
     {
         this.gridGenerator = gridGenerator;
+        this.elementsMover = elementsMover;
+
+        OnBusyFinished = delegate { isBusy = false; };
+    }
+
+    public void SetNewMover(IGridElementViewMover newMover)
+    {
+        elementsMover = newMover;
     }
 
     public void CreateNewGrid(int columns, int rows)
@@ -47,7 +55,7 @@ public class LetterGridController : MonoBehaviour
         }
         else
         {
-            animator.ForceStop();
+            elementsMover.ForceStop();
             ClearElements();
         }
 
@@ -61,17 +69,18 @@ public class LetterGridController : MonoBehaviour
             newGridElement.UpdateValue();
 
             newGridElement.transform.SetParent(gridParent);
-            newGridElement.SetRectTransform(gridProperties.ElementSize, Vector2.zero, Vector2.zero);
+            newGridElement.Setup(gridProperties.ElementSize, Vector2.zero, Vector2.zero);
 
             elements[i] = newGridElement;
         }
 
-        animator.PlayGenerateAnimation(elements, gridProperties);
+        TryToSetBusyState();
+        elementsMover.MoveElementsToStartPositions(elements, gridProperties, OnBusyFinished);
     }
 
     public void ShuffleElements()
     {
-        animator.ForceStop();
+        elementsMover.ForceStop();
         int[] shuffledPlaces = new int[order.Length];
         order.CopyTo(shuffledPlaces, 0);
 
@@ -82,7 +91,8 @@ public class LetterGridController : MonoBehaviour
             order[shuffledPlaces[i]] = i;
         }
 
-        animator.MoveElementsToIndexedPositions(elements, shuffledPlaces, gridProperties);
+        TryToSetBusyState();
+        elementsMover.MoveElementsToPositions(elements, shuffledPlaces, gridProperties, OnBusyFinished);
     }
 
     public void ShuffleRandomRow()
@@ -107,7 +117,18 @@ public class LetterGridController : MonoBehaviour
             shuffledElements[i] = elements[order[fromIndex + i]];
             newElementsOrder[i] = fromIndex + i;
         }
-        animator.MoveElementsToIndexedPositions(shuffledElements, newElementsOrder, gridProperties);
+
+        TryToSetBusyState();
+        elementsMover.MoveElementsToPositions(shuffledElements, newElementsOrder, gridProperties, OnBusyFinished);
+    }
+
+    private void TryToSetBusyState()
+    {
+        if (!isBusy)
+        {
+            isBusy = true;
+            OnBusyStarted?.Invoke();
+        }
     }
 
     private void ClearElements()
@@ -116,12 +137,6 @@ public class LetterGridController : MonoBehaviour
         {
             elementsPoolController.ReleaseElement(elements[i]);
         }
-    }
-
-    private void OnEnable()
-    {
-        animator.OnMovingStarted += delegate {OnBusyStarted?.Invoke();};
-        animator.OnMovingCompleted += delegate {OnBusyFinished?.Invoke();};
     }
 
     private void OnDisable()

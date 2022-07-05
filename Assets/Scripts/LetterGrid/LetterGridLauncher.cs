@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class LetterGridLauncher : MonoBehaviour
 {
-    //Pool
     [SerializeField] private GridGenerator gridGenerator;
+    [SerializeField] private GridElementsViewMover gridElementsViewMover;
+
     [SerializeField] private LetterGridController gridController;
 
     [Space(20)]
@@ -12,7 +13,7 @@ public class LetterGridLauncher : MonoBehaviour
     public void Launch()
     {
         gridGenerator.Init();
-        gridController.Init(gridGenerator);
+        gridController.Init(gridGenerator, gridElementsViewMover);
 
         inputController.Init(gridController);
 

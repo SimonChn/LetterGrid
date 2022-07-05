@@ -4,7 +4,7 @@ using UnityEngine;
 
 using URandom = UnityEngine.Random;
 
-public class LetterGridMover : MonoBehaviour
+public class GridElementsViewMover : MonoBehaviour, IGridElementViewMover
 {
     private IEnumerator animationCoroutine;
 
@@ -28,7 +28,7 @@ public class LetterGridMover : MonoBehaviour
         }
     }
 
-    public void PlayGenerateAnimation(LetterGridElementView[] elements, GridProperties gridProperties)
+    public void MoveElementsToStartPositions(IGridElementView[] elements, GridProperties gridProperties, Action onEnd)
     {
         Vector2[] startPositions = new Vector2[elements.Length];
         Vector2[] targetPositions = new Vector2[elements.Length];
@@ -59,15 +59,15 @@ public class LetterGridMover : MonoBehaviour
                         URandom.Range(-0.5f * eHeight, 0.5f * eHeight + gridY))
             };
 
-            elements[i].SetAnchoredPosition(startPositions[i]);
+            elements[i].Position = startPositions[i];
         }
 
-        MoveElementsToPositions(elements, startPositions, targetPositions, generationMoveTime);
+        MoveElementsToPositions(elements, startPositions, targetPositions, generationMoveTime, onEnd);
     }
 
-    public void MoveElementsToIndexedPositions(LetterGridElementView[] elements,int[] targetIndexes, GridProperties gridProperties)
+    public void MoveElementsToPositions(IGridElementView[] elements, int[] targetGridIndexes, GridProperties gridProperties, Action onEnd)
     {
-        if(elements.Length != targetIndexes.Length)
+        if (elements.Length != targetGridIndexes.Length)
         {
             throw new ArgumentException();
         }
@@ -77,20 +77,21 @@ public class LetterGridMover : MonoBehaviour
 
         for (int i = 0; i < elements.Length; i++)
         {
-            startPositions[i] = elements[i].Positon;
-            targetPositions[i] = gridProperties.GetGridElementPosition(targetIndexes[i]);
+            startPositions[i] = elements[i].Position;
+            targetPositions[i] = gridProperties.GetGridElementPosition(targetGridIndexes[i]);
         }
 
-        MoveElementsToPositions(elements, startPositions, targetPositions, moveTime);
+        MoveElementsToPositions(elements, startPositions, targetPositions, moveTime, onEnd);
     }
 
-    public void MoveElementsToPositions(LetterGridElementView[] elements, Vector2[] startPositions, Vector2[] targetPositions, float moveTime)
+    private void MoveElementsToPositions(IGridElementView[] elements, Vector2[] startPositions, Vector2[] targetPositions, float moveTime, Action onEnd)
     {
-        animationCoroutine = MoveElementsToPositionsCoroutine(elements, startPositions, targetPositions, moveTime);
+        animationCoroutine = MoveElementsToPositionsCoroutine(elements, startPositions, targetPositions, moveTime, onEnd);
         StartCoroutine(animationCoroutine);
     }
 
-    private IEnumerator MoveElementsToPositionsCoroutine(LetterGridElementView[] elements, Vector2[] startPositions, Vector2[] targetPositions, float moveTime)
+    private IEnumerator MoveElementsToPositionsCoroutine(IGridElementView[] elements, Vector2[] startPositions, Vector2[] targetPositions, 
+        float moveTime, Action onEnd)
     {
         OnMovingStarted?.Invoke();
 
@@ -128,16 +129,10 @@ public class LetterGridMover : MonoBehaviour
 
             for(int i = 0; i < elements.Length; i++)
             {
-                elements[i].SetAnchoredPosition(startPositions[i] + (targetPositions[i] - startPositions[i]) * calculatedProgress);
+                elements[i].Position = startPositions[i] + (targetPositions[i] - startPositions[i]) * calculatedProgress;
             }
         }
 
-        OnMovingCompleted?.Invoke();
-    }
-
-    private void OnDisable()
-    {
-        OnMovingStarted = null;
-        OnMovingCompleted = null;
+        onEnd?.Invoke();
     }
 }
