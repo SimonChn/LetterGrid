@@ -14,12 +14,11 @@ public static class ArrayExtension
 
         int breakCounter = 1000;
 
-        int iteration = 0;
-        while (iteration < breakCounter)
+        for(int i = 0; i < breakCounter; i++)
         {
             array.Shuffle();
 
-            for (int i = 0; i < array.Length; i++)
+            for (int j = 0; j < array.Length; j++)
             {
                 if (!(tempStorage[i].Equals(array[i])))
                 {

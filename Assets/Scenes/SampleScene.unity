@@ -225,8 +225,8 @@ GameObject:
   - component: {fileID: 107481587}
   - component: {fileID: 107481588}
   - component: {fileID: 107481590}
-  - component: {fileID: 107481589}
   - component: {fileID: 107481591}
+  - component: {fileID: 107481589}
   - component: {fileID: 107481592}
   m_Layer: 0
   m_Name: Controllers
@@ -264,6 +264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridGenerator: {fileID: 107481590}
+  gridElementsViewMover: {fileID: 107481591}
   gridController: {fileID: 107481589}
   inputController: {fileID: 107481592}
 --- !u!114 &107481589
@@ -282,7 +283,6 @@ MonoBehaviour:
   spawnCanvas: {fileID: 2125504771}
   poolParent: {fileID: 277050914}
   gridElementPrefab: {fileID: 620219642466758481, guid: 9b8a235f1edb7ab4e91804c7fe4c5970, type: 3}
-  animator: {fileID: 107481591}
 --- !u!114 &107481590
 MonoBehaviour:
   m_ObjectHideFlags: 0
