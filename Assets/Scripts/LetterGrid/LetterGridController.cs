@@ -23,8 +23,8 @@ public class LetterGridController : MonoBehaviour
     [SerializeField] private Transform poolParent;
     [SerializeField] private LetterGridElementView gridElementPrefab;
 
-    public Action OnBusyStarted;
-    public Action OnBusyFinished;
+    public event Action OnBusyStarted;
+    public event Action OnBusyFinished;
 
     public void Init(GridGenerator gridGenerator, IGridElementViewMover elementsMover)
     {

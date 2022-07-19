@@ -16,8 +16,8 @@ public class GridElementsViewMover : MonoBehaviour, IGridElementViewMover
     [Range(0.01f,2f)]
     [SerializeField] private float generationMoveTime = 1f;
 
-    public Action OnMovingStarted;
-    public Action OnMovingCompleted;
+    public event Action OnMovingStarted;
+    public event Action OnMovingCompleted;
 
     public void ForceStop()
     {
